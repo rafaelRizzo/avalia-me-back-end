@@ -30,30 +30,53 @@ class AvaliacaoModel {
   }
 
   async validarJWT(uuid) {
+    // Buscar avaliação pelo UUID
     const avaliacao = await this.buscarPorUUID(uuid);
 
     if (!avaliacao) {
       throw new Error('Avaliação não encontrada');
     }
-    logger.info(`Avaliação localizada: ${avaliacao.nome_atendente}, ${avaliacao.nome_empresa}, ${avaliacao.protocolo_atendimento}`);
 
-    logger.info('Status da avaliação:', avaliacao.status); // Log para verificar o status
+    // Log de informações básicas da avaliação
+    logger.info(`Avaliação localizada: Atendente: ${avaliacao.nome_atendente}, Empresa: ${avaliacao.nome_empresa}, Protocolo: ${avaliacao.protocolo_atendimento}, Status: ${avaliacao.status}, UUID: ${avaliacao.uuid}`);
+    logger.info(`Status atual da avaliação: ${avaliacao.status}`);
 
-    // Validar JWT usando o JWTManager
+    if (avaliacao.status === 'avaliado') {
+      throw new Error('UUID avaliado');
+    }
+
+    if (avaliacao.status === 'expirado') {
+      throw new Error('UUID expirado');
+    }
+
+
     try {
+      // Validar JWT usando o JWTManager
       const decoded = await JWTManager.validarToken(avaliacao.jwt);
 
-      // Se o JWT for válido, retornamos o decodificado
+      // Retornar o JWT decodificado se válido
       return decoded;
     } catch (error) {
-      // Se o JWT estiver expirado e o status for 'pendente', atualize o status
+      // Verificar se o erro é devido ao JWT expirado e o status está pendente
       if (error.message === 'JWT expirado' && avaliacao.status === 'pendente') {
-        logger.info("Atualizando status para expirado.");
-        const sql = `UPDATE avaliacoes SET status = 'expirado', jwt = null WHERE uuid = ?`;
-        await pool.execute(sql, [uuid]);
-        logger.info('Status atualizado para expirado');
+        logger.info('JWT expirado. Atualizando status para "expirado".');
+
+        // Atualizar o status no banco de dados
+        const sql = `UPDATE avaliacoes SET status = 'expirado', jwt = NULL WHERE uuid = ?`;
+        try {
+          await pool.execute(sql, [uuid]);
+          logger.info('Status atualizado para "expirado".');
+        } catch (dbError) {
+          logger.error('Erro ao atualizar o status no banco de dados:', dbError);
+          throw new Error('Erro interno ao atualizar o status da avaliação.');
+        }
+
+        // Lançar erro com uma mensagem de JWT expirado
+        throw new Error('JWT expirado');
       }
-      throw new Error('JWT expirado ou inválido');
+
+      // Propagar erro para JWT inválido ou outros problemas
+      throw new Error('JWT inválido');
     }
   }
 

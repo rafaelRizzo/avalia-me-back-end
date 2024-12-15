@@ -1,3 +1,4 @@
+import { logger } from '../logger/index.js';
 import AvaliacaoModel from '../models/AvaliacaoModel.js';
 import { v7 as uuidv7 } from 'uuid';
 
@@ -23,9 +24,9 @@ class AvaliacaoController {
     } catch (error) {
       // Log detalhado apenas para desenvolvedores (em ambiente de desenvolvimento)
       if (process.env.NODE_ENV === 'development') {
-        console.error(error);  // Loga o erro completo no console, incluindo stack trace
+        logger.error(error);  // Loga o erro completo no console, incluindo stack trace
       } else {
-        console.error(error.message); // Loga apenas a mensagem simples no console
+        logger.error(error.message); // Loga apenas a mensagem simples no console
       }
       res.status(500).json({ message: 'Erro ao criar avaliação', error: error.message });
     }
@@ -35,19 +36,48 @@ class AvaliacaoController {
     try {
       const { uuid } = req.params;
 
+      if (!uuid) {
+        return res.status(400).json({ message: 'UUID é obrigatório' });
+      }
+
       // Validar JWT no model
       const decoded = await AvaliacaoModel.validarJWT(uuid);
 
-      res.status(200).json({ message: 'JWT válido', decoded });
+      // Responder com sucesso e o token decodificado
+      return res.status(200).json({
+        message: 'JWT válido',
+        data: decoded
+      });
     } catch (error) {
-      // Log detalhado apenas para desenvolvedores (em ambiente de desenvolvimento)
-      if (process.env.NODE_ENV === 'development') {
-        console.error(error);  // Loga o erro completo no console, incluindo stack trace
-      } else {
-        console.error(error.message); // Loga apenas a mensagem simples no console
+      // Log detalhado com separação de níveis
+      const isDev = process.env.NODE_ENV === 'development';
+      const logMessage = isDev ? error : error.message;
+      logger.error(`[JWT Validation Error]: ${logMessage}`);
+
+      // Determinar status HTTP com base no tipo de erro
+      let status;
+      switch (error.message) {
+        case 'Avaliação não encontrada':
+          status = 404;
+          break;
+        case 'JWT expirado':
+          status = 498; // Código específico para JWT expirado
+          break;
+        case 'UUID avaliado':
+          status = 498; // Código específico para JWT avaliado
+          break;
+        case 'JWT inválido':
+          status = 401; // Código específico para JWT inválido
+          break;
+        default:
+          status = 500; // Erros não esperados
+          break;
       }
-      const status = error.message === 'Avaliação não encontrada' ? 404 : 401;
-      res.status(status).json({ message: error.message });
+
+      // Responder com mensagem de erro apropriada
+      return res.status(status).json({
+        message: error.message || 'Erro interno no servidor'
+      });
     }
   }
 
@@ -70,9 +100,9 @@ class AvaliacaoController {
     } catch (error) {
       // Log detalhado apenas para desenvolvedores (em ambiente de desenvolvimento)
       if (process.env.NODE_ENV === 'development') {
-        console.error(error);  // Loga o erro completo no console, incluindo stack trace
+        logger.error(error);  // Loga o erro completo no console, incluindo stack trace
       } else {
-        console.error(error.message); // Loga apenas a mensagem simples no console
+        logger.error(error.message); // Loga apenas a mensagem simples no console
       }
       res.status(500).json({ message: 'Erro ao listar avaliações', error: error.message });
     }
@@ -104,9 +134,9 @@ class AvaliacaoController {
       }
     } catch (error) {
       if (process.env.NODE_ENV === 'development') {
-        console.error(error);
+        logger.error(error);
       } else {
-        console.error(error.message);
+        logger.error(error.message);
       }
       res.status(500).json({ message: 'Erro ao atualizar avaliação', error: error.message });
     }

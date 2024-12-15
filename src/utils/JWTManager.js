@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 class JWTManager {
-    constructor(secret = 'seu_segredo_jwt', expiresIn = '1m') {
+    constructor(secret = process.env.JWT_SECRET, expiresIn = process.env.JWT_EXPIRES) {
         this.secret = secret;
         this.expiresIn = expiresIn;
     }
@@ -12,7 +12,7 @@ class JWTManager {
 
     validarToken(token) {
         return new Promise((resolve, reject) => {
-            jwt.verify(token, 'seu_segredo_jwt', (err, decoded) => {
+            jwt.verify(token, this.secret, (err, decoded) => {
                 if (err) {
                     if (err.name === 'TokenExpiredError') {
                         reject(new Error('JWT expirado')); // Agora será rejeitado com "JWT expirado"

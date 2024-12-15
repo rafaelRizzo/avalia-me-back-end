@@ -2,7 +2,7 @@ import axios from 'axios'; // Usando axios para fazer requisições HTTP
 import { expect } from 'chai'; // Chai para asserções
 import { logger } from './../src/logger/index.js';
 
-const API_URL = 'http://localhost:3000'; // Porta padrão do servidor
+const API_URL = 'http://localhost:3001'; // Porta padrão do servidor
 
 let uuid_generated; // Declarando a variável no escopo global
 
@@ -51,7 +51,7 @@ describe('Testando a rota de validação do UUID', function () {
             // Validações
             expect(response.status).to.equal(200);
             expect(data.message).to.equal('JWT válido');
-            expect(data.decoded).to.have.property('uuid', uuid_generated); // Verifica se o UUID bate
+            expect(data.data).to.have.property('uuid', uuid_generated); // Verifica se o UUID bate
         } catch (error) {
             logger.error('Erro na requisição (VALIDATE):', error.response?.data || error.message);
             throw error;
