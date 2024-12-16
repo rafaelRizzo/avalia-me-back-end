@@ -5,7 +5,13 @@ import { v7 as uuidv7 } from 'uuid';
 class AvaliacaoController {
   async criarAvaliacao(req, res) {
     try {
-      const { nome_atendente, nome_empresa, ip_generated, protocolo_atendimento } = req.body;
+      const { nome_atendente, nome_empresa, protocolo_atendimento } = req.body;
+
+      // Pegando o IP do cliente da requisição
+      const ipClient = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+      // Se o IP for uma string com múltiplos IPs (em caso de proxy), pegar o primeiro IP
+      const ip_generated = ipClient.split(',')[0];
 
       // Gerar UUID
       const uuid = uuidv7();
@@ -59,6 +65,9 @@ class AvaliacaoController {
       switch (error.message) {
         case 'Avaliação não encontrada':
           status = 404;
+          break;
+        case 'UUID expirado':
+          status = 498; // Código específico para JWT expirado
           break;
         case 'JWT expirado':
           status = 498; // Código específico para JWT expirado
