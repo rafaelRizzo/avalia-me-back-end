@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express from 'express';
 import AvaliacaoRoutes from './src/routes/AvaliacaoRoutes.js';
 import { logger } from './src/logger/index.js';
