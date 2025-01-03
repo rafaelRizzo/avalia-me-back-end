@@ -120,7 +120,10 @@ class AvaliacaoController {
   async atualizarAvaliacao(req, res) {
     try {
       const { uuid } = req.params; // UUID da avaliação a ser atualizada
-      const { nota_atendimento, nota_empresa, ip_client, obs } = req.body; // Dados a serem atualizados
+      const { nota_atendimento, nota_empresa, obs } = req.body; // Dados a serem atualizados
+
+      // Capturar o IP do cliente automaticamente
+      const ip_client = req.ip;
 
       // Validar JWT no model
       try {
