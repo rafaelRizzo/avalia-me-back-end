@@ -36,9 +36,13 @@ npm install
 
 Crie o seguinte banco de dados no MySQL:
 
+```
 CREATE DATABASE sistema_avaliacao;
+```
 
+```
 USE sistema_avaliacao;
+```
 
 ```
 CREATE TABLE avaliacoes (
@@ -57,7 +61,6 @@ CREATE TABLE avaliacoes (
     data_ultima_alteracao DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     data_criacao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-
 ```
 Crie um arquivo `.env` na raiz do projeto com as variáveis de ambiente:
 
