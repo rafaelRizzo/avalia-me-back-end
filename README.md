@@ -40,6 +40,7 @@ CREATE DATABASE sistema_avaliacao;
 
 USE sistema_avaliacao;
 
+```
 CREATE TABLE avaliacoes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     uuid VARCHAR(255) NOT NULL,
@@ -57,6 +58,7 @@ CREATE TABLE avaliacoes (
     data_criacao DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+```
 Crie um arquivo `.env` na raiz do projeto com as variáveis de ambiente:
 
 ````bash
