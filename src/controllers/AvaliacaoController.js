@@ -7,11 +7,15 @@ class AvaliacaoController {
     try {
       const { nome_atendente, nome_empresa, protocolo_atendimento } = req.body;
 
-      // Pegando o IP do cliente da requisição
-      const ipClient = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+      // Capturar o IP do cliente diretamente
+      let ipClient = req.ip;
 
-      // Se o IP for uma string com múltiplos IPs (em caso de proxy), pegar o primeiro IP
-      const ip_generated = ipClient.split(',')[0];
+      // Remover o prefixo "::ffff:" caso esteja presente
+      if (ipClient.startsWith('::ffff:')) {
+        ipClient = ipClient.replace('::ffff:', '');
+      }
+
+      const ip_generated = ipClient;
 
       // Gerar UUID
       const uuid = uuidv7();
@@ -121,35 +125,57 @@ class AvaliacaoController {
     try {
       const { uuid } = req.params; // UUID da avaliação a ser atualizada
       const { nota_atendimento, nota_empresa, obs } = req.body; // Dados a serem atualizados
-
+  
       // Capturar o IP do cliente automaticamente
-      const ip_client = req.ip;
-
-      // Validar JWT no model
+      let ip_client = req.ip;
+  
+      // Remover o prefixo "::ffff:" caso esteja presente
+      if (ip_client.startsWith('::ffff:')) {
+        ip_client = ip_client.replace('::ffff:', '');
+      }
+  
+      // Validar o UUID e JWT no model
       try {
-        await AvaliacaoModel.validarJWT(uuid);
-
         // Verificar se a avaliação existe
         const avaliacaoExistente = await AvaliacaoModel.buscarPorUUID(uuid);
+  
         if (!avaliacaoExistente) {
           return res.status(404).json({ message: 'Avaliação não encontrada' });
         }
-
+  
+        // Verificar se o IP do cliente é igual ao `ip_generated` da avaliação existente
+        if (avaliacaoExistente.ip_generated === ip_client) {
+          return res.status(403).json({
+            message: 'Avaliação não permitida. O IP gerado é igual ao IP do cliente.',
+          });
+        }
+  
+        // Validar se o JWT está ativo
+        await AvaliacaoModel.validarJWT(uuid);
+  
         // Atualizar avaliação no banco
         const dadosAtualizados = { nota_atendimento, nota_empresa, ip_client, obs };
-
+  
         await AvaliacaoModel.atualizarAvaliacao(uuid, dadosAtualizados);
-
+  
         res.status(200).json({ message: 'Avaliação atualizada com sucesso' });
       } catch (error) {
-        return res.status(401).json({ message: 'JWT expirado ou inválido' });
+        // Mensagens de erro específicas
+        if (error.message === 'JWT expirado' || error.message === 'JWT inválido') {
+          return res.status(401).json({ message: 'JWT expirado ou inválido' });
+        }
+  
+        // UUID não encontrado ou qualquer outro erro
+        return res.status(400).json({ message: error.message });
       }
     } catch (error) {
+      // Log detalhado em ambiente de desenvolvimento
       if (process.env.NODE_ENV === 'development') {
         logger.error(error);
       } else {
         logger.error(error.message);
       }
+  
       res.status(500).json({ message: 'Erro ao atualizar avaliação', error: error.message });
     }
   }
