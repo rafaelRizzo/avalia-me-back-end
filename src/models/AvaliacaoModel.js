@@ -81,7 +81,7 @@ class AvaliacaoModel {
   }
 
   async listarAvaliacoes(filtros = {}) {
-    const { data_inicial, data_final, status, nome_atendente, nome_empresa } = filtros;
+    const { data_inicial, data_final, status, nome_atendente, nome_empresa, nota_atendimento, nota_empresa } = filtros;
 
     let sql = 'SELECT * FROM avaliacoes WHERE 1=1';
     const params = [];
@@ -109,6 +109,16 @@ class AvaliacaoModel {
     if (nome_empresa) {
       sql += ' AND nome_empresa LIKE ?';
       params.push(`%${nome_empresa}%`);
+    }
+
+    if (nota_atendimento) {
+      sql += ' AND nota_atendimento LIKE ?';
+      params.push(`%${nota_atendimento}%`);
+    }
+
+    if (nota_empresa) {
+      sql += ' AND nota_empresa LIKE ?';
+      params.push(`%${nota_empresa}%`);
     }
 
     sql += ' ORDER BY data_criacao DESC'; // Ordena pela data de criação, da mais recente para a mais antiga

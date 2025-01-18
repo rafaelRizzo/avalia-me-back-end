@@ -1,11 +1,13 @@
 import { logger } from '../logger/index.js';
 import AvaliacaoModel from '../models/AvaliacaoModel.js';
+import { createAvaliacaoSchema, listAvaliacoesSchema } from '../schemas/avaliacao/index.js'
 import { v7 as uuidv7 } from 'uuid';
 
 class AvaliacaoController {
   async criarAvaliacao(req, res) {
     try {
-      const { nome_atendente, nome_empresa, protocolo_atendimento } = req.body;
+      // Valida os filtros usando o schema
+      const { nome_atendente, nome_empresa, protocolo_atendimento } = createAvaliacaoSchema.parse(req.body);
 
       // Capturar o IP do cliente diretamente
       let ipClient = req.ip;
@@ -38,7 +40,7 @@ class AvaliacaoController {
       } else {
         logger.error(error.message); // Loga apenas a mensagem simples no console
       }
-      res.status(500).json({ message: 'Erro ao criar avaliação', error: error.message });
+      res.status(500).json({ message: 'Erro ao criar avaliação', error: error.issues });
     }
   }
 
@@ -96,28 +98,22 @@ class AvaliacaoController {
 
   async listarAvaliacoes(req, res) {
     try {
-      const { data_inicial, data_final, status, nome_atendente, nome_empresa } = req.query;
-
-      const filtros = {
-        data_inicial,
-        data_final,
-        status,
-        nome_atendente,
-        nome_empresa,
-      };
+      // Valida os filtros usando o schema
+      const filtros = listAvaliacoesSchema.parse(req.query);
 
       // Filtrar e listar as avaliações
       const avaliacoes = await AvaliacaoModel.listarAvaliacoes(filtros);
 
       res.status(200).json({ message: 'Avaliações listadas com sucesso', data: avaliacoes });
     } catch (error) {
-      // Log detalhado apenas para desenvolvedores (em ambiente de desenvolvimento)
+      // Log detalhado em ambiente de desenvolvimento
       if (process.env.NODE_ENV === 'development') {
-        logger.error(error);  // Loga o erro completo no console, incluindo stack trace
+        logger.error(error);
       } else {
-        logger.error(error.message); // Loga apenas a mensagem simples no console
+        logger.error(error.message);
       }
-      res.status(500).json({ message: 'Erro ao listar avaliações', error: error.message });
+
+      res.status(500).json({ message: 'Erro ao atualizar avaliação', error: error.issues });
     }
   }
 
@@ -125,46 +121,46 @@ class AvaliacaoController {
     try {
       const { uuid } = req.params; // UUID da avaliação a ser atualizada
       const { nota_atendimento, nota_empresa, obs } = req.body; // Dados a serem atualizados
-  
+
       // Capturar o IP do cliente automaticamente
       let ip_client = req.ip;
-  
+
       // Remover o prefixo "::ffff:" caso esteja presente
       if (ip_client.startsWith('::ffff:')) {
         ip_client = ip_client.replace('::ffff:', '');
       }
-  
+
       // Validar o UUID e JWT no model
       try {
         // Verificar se a avaliação existe
         const avaliacaoExistente = await AvaliacaoModel.buscarPorUUID(uuid);
-  
+
         if (!avaliacaoExistente) {
           return res.status(404).json({ message: 'Avaliação não encontrada' });
         }
-  
+
         // Verificar se o IP do cliente é igual ao `ip_generated` da avaliação existente
         if (avaliacaoExistente.ip_generated === ip_client) {
           return res.status(403).json({
             message: 'Avaliação não permitida. O IP gerado é igual ao IP do cliente.',
           });
         }
-  
+
         // Validar se o JWT está ativo
         await AvaliacaoModel.validarJWT(uuid);
-  
+
         // Atualizar avaliação no banco
         const dadosAtualizados = { nota_atendimento, nota_empresa, ip_client, obs };
-  
+
         await AvaliacaoModel.atualizarAvaliacao(uuid, dadosAtualizados);
-  
+
         res.status(200).json({ message: 'Avaliação atualizada com sucesso' });
       } catch (error) {
         // Mensagens de erro específicas
         if (error.message === 'JWT expirado' || error.message === 'JWT inválido') {
           return res.status(401).json({ message: 'JWT expirado ou inválido' });
         }
-  
+
         // UUID não encontrado ou qualquer outro erro
         return res.status(400).json({ message: error.message });
       }
@@ -175,8 +171,8 @@ class AvaliacaoController {
       } else {
         logger.error(error.message);
       }
-  
-      res.status(500).json({ message: 'Erro ao atualizar avaliação', error: error.message });
+
+      res.status(500).json({ message: 'Erro ao atualizar avaliação', error: error.issues });
     }
   }
 
