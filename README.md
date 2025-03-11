@@ -19,7 +19,7 @@ Tecnologias Utilizadas
 
 Clone este repositório: 
 ```git
-git clone https://github.com/phonevox/avalia-me
+git clone https://github.com/rafaelRizzo/avalia-me-back-end
 ```
 
 Navegue até o diretório do projeto:
