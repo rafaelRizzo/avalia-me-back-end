@@ -89,9 +89,9 @@ class AvaliacaoController {
           break;
       }
 
-      // Responder com mensagem de erro apropriada
+      // Responder com mensagem de erro genérica
       return res.status(status).json({
-        message: error.message || 'Erro interno no servidor'
+        message: 'Erro no processamento da solicitação. Por favor, tente novamente mais tarde.'
       });
     }
   }
@@ -113,7 +113,7 @@ class AvaliacaoController {
         logger.error(error.message);
       }
 
-      res.status(500).json({ message: 'Erro ao atualizar avaliação', error: error.issues });
+      res.status(500).json({ message: 'Erro ao listar avaliação', error: error.issues });
     }
   }
 
