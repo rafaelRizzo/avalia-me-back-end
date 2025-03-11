@@ -25,7 +25,7 @@ git clone https://github.com/rafaelRizzo/avalia-me-back-end
 Navegue até o diretório do projeto:
 
 ````bash
-cd avalia-me
+cd avalia-me-back-end
 ````
 
 Instale as dependências:
@@ -169,8 +169,8 @@ Este atualiza a avaliação com base no UUID fornecido.
 *Corpo (JSON):*
 ```json
 { 
-    "nota_atendimento": 5 , // (nota de 1 a 5)
-    "nota_empresa": 1 , // (nota de 1 a 5)
+    "nota_atendimento": "5" , // (nota de 1 a 5)
+    "nota_empresa": "1" , // (nota de 1 a 5)
     "obs": "PARA FICAR RUIM TEM QUE MELHORAR MUITO!" // (opcional)
 }
 ```
