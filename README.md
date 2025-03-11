@@ -79,7 +79,7 @@ O servidor será iniciado na porta 3000 por padrão e estará pronto para recebe
 
 ### Endpoints:
 
-**[POST]** /create
+**[POST]** /api/generate
 
 Este endpoint gera um token JWT baseado nas informações fornecidas e armazena o UUID e token no Redis.
 Requisição
@@ -110,7 +110,7 @@ Respostas
 }
 ```
 ***
-**[GET]** /verify/**:uuid**
+**[GET]** /api/validate/**:uuid**
 
 Este endpoint verifica se o UUID e o token enviados são válidos.
 Requisição
@@ -140,7 +140,7 @@ Resposta
 }
 ```
 ***
-**[GET]** /list-valid-uuids
+**[GET]** /api/list
 
 Este endpoint lista todos os UUIDs válidos com seus respectivos tokens armazenados no Redis.
 Resposta
@@ -159,6 +159,32 @@ Resposta
 ```json
 { 
     "message": "Nenhum UUID válido encontrado"
+}
+```
+
+**[PUT]** /api/avaliacao/**:uuid**
+
+Este atualiza a avaliação com base no UUID fornecido.
+
+*Corpo (JSON):*
+```json
+{ 
+    "nota_atendimento": 5 , // (nota de 1 a 5)
+    "nota_empresa": 1 , // (nota de 1 a 5)
+    "obs": "PARA FICAR RUIM TEM QUE MELHORAR MUITO!" // (opcional)
+}
+```
+*Sucesso (status 200):*
+```json
+{ 
+    "message": "Avaliação atualizada com sucesso"
+}
+```
+
+*Erro (status 500):*
+```json
+{ 
+    "message": "Erro ao atualizar avaliação"
 }
 ```
 ***
