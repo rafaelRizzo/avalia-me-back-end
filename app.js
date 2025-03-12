@@ -12,7 +12,7 @@ app.use(express.json());
 // Configurações do cors
 const corsOptions = {
   origin: '*', // Altere conforme o necessário
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  methods: 'GET,PUT,POST',
   preflightContinue: false,
   optionsSuccessStatus: 204,
 };
