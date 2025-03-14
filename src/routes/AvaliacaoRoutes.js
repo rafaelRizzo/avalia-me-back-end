@@ -8,12 +8,12 @@ const router = express.Router();
 router.post('/api/generate', authMiddleware, AvaliacaoController.criarAvaliacao);
 
 // Rota para validar JWT
-router.get('/api/validate/:uuid', authMiddleware, AvaliacaoController.validarJWT);
+router.get('/api/validate/:uuid', AvaliacaoController.validarJWT);
 
 // Rota para listar avaliações com filtros
 router.get('/api/list', authMiddleware, AvaliacaoController.listarAvaliacoes);
 
 // Rota para atualizar avaliação
-router.put('/api/avaliacao/:uuid', authMiddleware, AvaliacaoController.atualizarAvaliacao);
+router.put('/api/avaliacao/:uuid', AvaliacaoController.atualizarAvaliacao);
 
 export default router;
