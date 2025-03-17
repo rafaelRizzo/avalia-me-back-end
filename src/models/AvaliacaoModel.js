@@ -102,23 +102,23 @@ class AvaliacaoModel {
     }
 
     if (nome_atendente) {
-      sql += ' AND nome_atendente LIKE ?';
-      params.push(`%${nome_atendente}%`);
+      sql += ' AND nome_atendente = ?';
+      params.push(`${nome_atendente}`);
     }
 
     if (nome_empresa) {
-      sql += ' AND nome_empresa LIKE ?';
-      params.push(`%${nome_empresa}%`);
+      sql += ' AND nome_empresa = ?';
+      params.push(`${nome_empresa}`);
     }
 
     if (nota_atendimento) {
-      sql += ' AND nota_atendimento LIKE ?';
-      params.push(`%${nota_atendimento}%`);
+      sql += ' AND nota_atendimento = ?';
+      params.push(`${nota_atendimento}`);
     }
 
     if (nota_empresa) {
-      sql += ' AND nota_empresa LIKE ?';
-      params.push(`%${nota_empresa}%`);
+      sql += ' AND nota_empresa = ?';
+      params.push(`${nota_empresa}`);
     }
 
     sql += ' ORDER BY data_criacao DESC'; // Ordena pela data de criação, da mais recente para a mais antiga
