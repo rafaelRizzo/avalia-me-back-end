@@ -13,6 +13,7 @@ services:
       - ./error.log:/app/error.log
     networks:
       - app_network
+    restart: always
 
 networks:
   app_network:
