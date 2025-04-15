@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  backend-avaliacao:
+    build: .
+    container_name: backend-avaliacao
+    ports:
+      - "3101:3101"
+    env_file:
+      - .env
+    volumes:
+      - ./combined.log:/app/combined.log
+      - ./error.log:/app/error.log
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
