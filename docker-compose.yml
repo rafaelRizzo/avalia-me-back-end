@@ -3,7 +3,6 @@ version: '3.8'
 services:
   backend-avaliacao:
     build: .
-    container_name: backend-avaliacao
     ports:
       - "3101:3101"
     env_file:
