@@ -6,20 +6,17 @@ RUN apk add --no-cache tzdata && \
     cp /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo "$TZ" > /etc/timezone
 
-# Instalar o pnpm globalmente
-RUN npm install -g pnpm
-
 # Definir o diretório de trabalho no contêiner
 WORKDIR /app
 
-# Copiar o arquivo package.json e pnpm-lock.yaml (caso tenha)
-COPY package.json pnpm-lock.yaml ./
+# Copiar os arquivos de dependências
+COPY package.json package-lock.json ./
 
-# Instalar as dependências usando o pnpm
-RUN pnpm install
+# Instalar as dependências usando npm
+RUN npm install
 
 # Copiar o restante do código da aplicação para o contêiner
 COPY . .
 
 # Definir o comando para rodar a aplicação
-CMD ["pnpm", "start"]
+CMD ["node", "app.js"]
