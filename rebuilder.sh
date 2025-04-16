@@ -27,6 +27,7 @@ echo "Subindo novo container..."
 docker run -d --restart always -p 127.0.0.1:3101:3101 \
   -v $(pwd)/combined.log:/app/combined.log \
   -v $(pwd)/error.log:/app/error.log \
+  -v $(pwd)/.env:/app/.env \
   --name $CONTAINER_NAME $IMAGE_NAME
 
 echo "Deploy concluído!"
