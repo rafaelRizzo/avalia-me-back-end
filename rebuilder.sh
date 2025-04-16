@@ -3,6 +3,8 @@
 # Nome do container
 CONTAINER_NAME="backend-avaliacao"
 
+VPS_IP="COLOQUE_O_IP_DA_VPS_AQUI"
+
 # Nome da imagem
 IMAGE_NAME="backend-avaliacao"
 
@@ -25,9 +27,11 @@ docker rm $CONTAINER_NAME || true
 # Sobe o novo container com a nova imagem e configura os volumes para logs
 echo "Subindo novo container..."
 docker run -d --restart always -p 127.0.0.1:3101:3101 \
+  --network crm_docker \
+  --add-host mysql-vps:$VPS_IP \
   -v $(pwd)/combined.log:/app/combined.log \
   -v $(pwd)/error.log:/app/error.log \
-  -v $(pwd)/.env:/app/.env \
+  --env-file .env \
   --name $CONTAINER_NAME $IMAGE_NAME
 
 echo "Deploy concluído!"
