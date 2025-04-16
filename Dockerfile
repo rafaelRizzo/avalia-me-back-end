@@ -21,8 +21,5 @@ RUN pnpm install
 # Copiar o restante do código da aplicação para o contêiner
 COPY . .
 
-# Expor a porta (ajuste conforme necessário)
-EXPOSE 3101
-
 # Definir o comando para rodar a aplicação
 CMD ["pnpm", "start"]
