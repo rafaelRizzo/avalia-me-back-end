@@ -14,6 +14,9 @@ git pull
 echo "Buildando nova imagem..."
 docker build -t $IMAGE_NAME .
 
+# Garante que os arquivos existem como arquivos (não diretórios)
+touch combined.log error.log
+
 # Para e remove o container antigo (se ele existir)
 echo "Parando e removendo o container antigo..."
 docker stop $CONTAINER_NAME || true
