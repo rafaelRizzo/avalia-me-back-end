@@ -9,10 +9,15 @@ class AvaliacaoController {
       // Valida os filtros usando o schema
       const { nome_atendente, nome_empresa, protocolo_atendimento } = createAvaliacaoSchema.parse(req.body);
 
-      // Capturar o IP do cliente diretamente
-      let ipClient = req.ip;
+      // Capturar o IP do cliente, mesmo se estiver atrás de proxy
+      let ipClient =
+        (req.headers['x-forwarded-for'] || '')
+          .split(',')[0]
+          .trim() ||
+        req.socket?.remoteAddress ||
+        req.ip;
 
-      // Remover o prefixo "::ffff:" caso esteja presente
+      // Remover o prefixo "::ffff:" caso esteja presente (IPv4 mapeado em IPv6)
       if (ipClient.startsWith('::ffff:')) {
         ipClient = ipClient.replace('::ffff:', '');
       }

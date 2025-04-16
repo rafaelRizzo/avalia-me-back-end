@@ -6,6 +6,8 @@ import cors from 'cors';
 
 const app = express();
 
+app.set('trust proxy', true);
+
 // Middlewares
 app.use(express.json());
 
@@ -24,6 +26,6 @@ app.use('/', AvaliacaoRoutes);
 
 const PORT = process.env.PORT || 3001;
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   logger.info(`Servidor rodando na porta ${PORT}`);
 });
