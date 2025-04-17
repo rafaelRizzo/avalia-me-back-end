@@ -81,7 +81,7 @@ class AvaliacaoModel {
   }
 
   async listarAvaliacoes(filtros = {}) {
-    const { data_inicial, data_final, status, nome_atendente, nome_empresa, atendimento_resolvido, nota_atendimento, nota_empresa } = filtros;
+    const { data_inicial, data_final, status, nome_atendente, nome_empresa, problema_resolvido, nota_atendimento, nota_empresa } = filtros;
 
     let sql = 'SELECT * FROM avaliacoes WHERE 1=1';
     const params = [];
@@ -101,9 +101,9 @@ class AvaliacaoModel {
       params.push(status);
     }
 
-    if (atendimento_resolvido) {
-      sql += ' AND atendimento_resolvido = ?';
-      params.push(`${atendimento_resolvido}`);
+    if (problema_resolvido) {
+      sql += ' AND problema_resolvido = ?';
+      params.push(`${problema_resolvido}`);
     }
 
     if (nome_atendente) {
@@ -133,16 +133,16 @@ class AvaliacaoModel {
   }
 
   async atualizarAvaliacao(uuid, dados) {
-    const { atendimento_resolvido, nota_atendimento, nota_empresa, ip_client, obs } = dados;
+    const { problema_resolvido, nota_atendimento, nota_empresa, ip_client, obs } = dados;
 
     // Atualizar avaliação no banco
     const sql = `
       UPDATE avaliacoes
-      SET atendimento_resolvido = ?, nota_atendimento = ?, nota_empresa = ?, ip_client = ?, obs = ?, status = ?, jwt = null
+      SET problema_resolvido = ?, nota_atendimento = ?, nota_empresa = ?, ip_client = ?, obs = ?, status = ?, jwt = null
       WHERE uuid = ?
     `;
 
-    const params = [atendimento_resolvido == true ? 1 : 0, , nota_atendimento, nota_empresa, ip_client, obs, 'avaliado', uuid];
+    const params = [problema_resolvido, nota_atendimento, nota_empresa, ip_client, obs, 'avaliado', uuid];
 
     const [result] = await pool.execute(sql, params);
     return result;

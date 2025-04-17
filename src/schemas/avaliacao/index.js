@@ -20,14 +20,14 @@ export const listAvaliacoesSchema = z.object({
     nome_atendente: z.string().optional(),
     nome_empresa: z.string().optional(),
     protocolo_atendimento: z.string().optional(),
-    atendimento_resolvido: z.boolean().optional(),
+    problema_resolvido: z.boolean().optional(),
     nota_atendimento: z.number().min(1).max(5).optional(),
     nota_empresa: z.number().min(1).max(5).optional(),
 });
 
 // nota_atendimento, nota_empresa, obs
 export const sendAvaliacoesSchema = z.object({
-    atendimento_resolvido: z.boolean(),
+    problema_resolvido: z.boolean(),
     nota_atendimento: z.number().min(1).max(5),
     nota_empresa: z.number().min(1).max(5),
 });

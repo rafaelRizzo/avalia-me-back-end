@@ -125,7 +125,7 @@ class AvaliacaoController {
   async atualizarAvaliacao(req, res) {
     try {
       const { uuid } = req.params; // UUID da avaliação a ser atualizada
-      const { atendimento_resolvido, nota_atendimento, nota_empresa, obs } = sendAvaliacoesSchema.parse(req.body);
+      const { problema_resolvido, nota_atendimento, nota_empresa, obs } = sendAvaliacoesSchema.parse(req.body);
 
       // Capturar o IP do cliente automaticamente
       let ip_client = req.ip;
@@ -155,7 +155,7 @@ class AvaliacaoController {
         await AvaliacaoModel.validarJWT(uuid);
 
         // Atualizar avaliação no banco
-        const dadosAtualizados = { atendimento_resolvido, nota_atendimento, nota_empresa, ip_client, obs };
+        const dadosAtualizados = { problema_resolvido, nota_atendimento, nota_empresa, ip_client, obs };
 
         await AvaliacaoModel.atualizarAvaliacao(uuid, dadosAtualizados);
 
