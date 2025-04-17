@@ -9,7 +9,7 @@ export const createAvaliacaoSchema = z.object({
 
 // Schema de validação para a rota de verificação
 export const verifyAvaliacaoSchema = z.object({
-    token: z.string().min(1, "Token é obrigatório"),  // Aqui estamos assumindo que o token é enviado no corpo
+    token: z.string().min(1, "Token é obrigatório"),
 });
 
 // Schema de validação para a rota de listagem
@@ -20,6 +20,14 @@ export const listAvaliacoesSchema = z.object({
     nome_atendente: z.string().optional(),
     nome_empresa: z.string().optional(),
     protocolo_atendimento: z.string().optional(),
-    nota_atendimento: z.enum(['1', '2', '3', '4', '5']).optional(), // Alterado para string com valores específicos
-    nota_empresa: z.enum(['1', '2', '3', '4', '5']).optional(), // Alterado para string com valores específicos
+    atendimento_resolvido: z.boolean().optional(),
+    nota_atendimento: z.number().min(1).max(5).optional(),
+    nota_empresa: z.number().min(1).max(5).optional(),
+});
+
+// nota_atendimento, nota_empresa, obs
+export const sendAvaliacoesSchema = z.object({
+    atendimento_resolvido: z.boolean(),
+    nota_atendimento: z.number().min(1).max(5),
+    nota_empresa: z.number().min(1).max(5),
 });

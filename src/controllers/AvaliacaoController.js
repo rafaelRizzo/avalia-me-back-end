@@ -1,6 +1,6 @@
 import { logger } from '../logger/index.js';
 import AvaliacaoModel from '../models/AvaliacaoModel.js';
-import { createAvaliacaoSchema, listAvaliacoesSchema } from '../schemas/avaliacao/index.js'
+import { createAvaliacaoSchema, listAvaliacoesSchema, sendAvaliacoesSchema } from '../schemas/avaliacao/index.js'
 import { v7 as uuidv7 } from 'uuid';
 
 class AvaliacaoController {
@@ -125,7 +125,7 @@ class AvaliacaoController {
   async atualizarAvaliacao(req, res) {
     try {
       const { uuid } = req.params; // UUID da avaliação a ser atualizada
-      const { nota_atendimento, nota_empresa, obs } = req.body; // Dados a serem atualizados
+      const { atendimento_resolvido, nota_atendimento, nota_empresa, obs } = sendAvaliacoesSchema.parse(req.body);
 
       // Capturar o IP do cliente automaticamente
       let ip_client = req.ip;
@@ -155,7 +155,7 @@ class AvaliacaoController {
         await AvaliacaoModel.validarJWT(uuid);
 
         // Atualizar avaliação no banco
-        const dadosAtualizados = { nota_atendimento, nota_empresa, ip_client, obs };
+        const dadosAtualizados = { atendimento_resolvido, nota_atendimento, nota_empresa, ip_client, obs };
 
         await AvaliacaoModel.atualizarAvaliacao(uuid, dadosAtualizados);
 

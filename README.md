@@ -50,6 +50,7 @@ CREATE TABLE avaliacoes (
     uuid VARCHAR(255) NOT NULL,
     nome_atendente VARCHAR(255) NOT NULL,
     nome_empresa VARCHAR(255) NOT NULL,
+    problema_resolvido BOOLEAN DEFAULT FALSE,
     nota_atendimento INT DEFAULT NULL,
     nota_empresa INT DEFAULT NULL,
     obs VARCHAR(1000) DEFAULT NULL,
