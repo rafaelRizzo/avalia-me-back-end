@@ -30,4 +30,5 @@ export const sendAvaliacoesSchema = z.object({
     problema_resolvido: z.boolean(),
     nota_atendimento: z.number().min(1).max(5),
     nota_empresa: z.number().min(1).max(5),
+    obs: z.string().max(1000)
 });
