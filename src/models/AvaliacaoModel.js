@@ -142,7 +142,7 @@ class AvaliacaoModel {
       WHERE uuid = ?
     `;
 
-    const params = [atendimento_resolvido, nota_atendimento, nota_empresa, ip_client, obs, 'avaliado', uuid];
+    const params = [atendimento_resolvido == true ? 1 : 0, , nota_atendimento, nota_empresa, ip_client, obs, 'avaliado', uuid];
 
     const [result] = await pool.execute(sql, params);
     return result;
