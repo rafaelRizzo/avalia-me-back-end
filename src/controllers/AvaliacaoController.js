@@ -103,22 +103,29 @@ class AvaliacaoController {
 
   async listarAvaliacoes(req, res) {
     try {
-      // Valida os filtros usando o schema
-      const filtros = listAvaliacoesSchema.parse(req.query);
+      let filtros = listAvaliacoesSchema.parse(req.query);
 
-      // Filtrar e listar as avaliações
+      // Se nenhuma data for fornecida, usar o mês atual
+      if (!filtros.data_inicial && !filtros.data_final) {
+        const now = new Date();
+        const primeiroDia = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0); // 00:00:00
+        const ultimoDia = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59); // 23:59:59
+
+        filtros.data_inicial = primeiroDia.toISOString().slice(0, 19).replace('T', ' ');
+        filtros.data_final = ultimoDia.toISOString().slice(0, 19).replace('T', ' ');
+      }
+
       const avaliacoes = await AvaliacaoModel.listarAvaliacoes(filtros);
 
       res.status(200).json({ message: 'Avaliações listadas com sucesso', data: avaliacoes });
     } catch (error) {
-      // Log detalhado em ambiente de desenvolvimento
       if (process.env.NODE_ENV === 'development') {
         logger.error(error);
       } else {
         logger.error(error.message);
       }
 
-      res.status(500).json({ message: 'Erro ao listar avaliação', error: error.issues });
+      res.status(500).json({ message: 'Erro ao listar avaliação', error: error.issues || error.message });
     }
   }
 
